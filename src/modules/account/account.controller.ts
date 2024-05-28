@@ -5,11 +5,6 @@ import { AccountService } from './account.service';
 export class AccountController {
   constructor(private readonly accountService: AccountService) {}
 
-  @Post()
-  async create(@Body() createAccountDto: any) {
-    return this.accountService.create(createAccountDto);
-  }
-
   @Get()
   async findAll() {
     return this.accountService.findAll();

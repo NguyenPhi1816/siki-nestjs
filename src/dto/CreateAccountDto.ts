@@ -1,4 +1,5 @@
 import { IsString, IsNotEmpty, Matches, IsEnum } from 'class-validator';
+import { AccountStatus } from 'src/enums/AccountStatus';
 import { UserRole } from 'src/enums/UserRole';
 
 export class CreateAccountDto {
@@ -15,9 +16,9 @@ export class CreateAccountDto {
 
   @IsEnum(UserRole)
   @IsNotEmpty()
-  userRoleId: UserRole;
+  userRole: UserRole;
 
-  @IsString()
+  @IsEnum(AccountStatus)
   @IsNotEmpty()
-  status: string;
+  status: AccountStatus;
 }

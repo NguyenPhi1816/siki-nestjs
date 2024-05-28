@@ -1,4 +1,11 @@
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  NotFoundException,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from 'src/dto/CreateUserDto';
 import { User } from 'src/schemas/user.schema';
@@ -7,16 +14,16 @@ import { User } from 'src/schemas/user.schema';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Post()
-  async create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
-  }
-
   @Get('/:phoneNumber')
   async findByPhoneNumber(
     @Param('phoneNumber') phoneNumber: string,
-  ): Promise<User | null> {
+  ): Promise<User> {
     const user = await this.userService.findByPhoneNumber(phoneNumber);
+    if (!user) {
+      throw new NotFoundException(
+        `Không tìm thấy người dùng với số điện thoại ${phoneNumber}`,
+      );
+    }
     return user;
   }
 

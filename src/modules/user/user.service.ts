@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { ClientSession, Model } from 'mongoose';
 import { CreateUserDto } from 'src/dto/CreateUserDto';
 import { User } from 'src/schemas/user.schema';
 
@@ -8,19 +8,20 @@ import { User } from 'src/schemas/user.schema';
 export class UserService {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
+  async create(
+    createUserDto: CreateUserDto,
+    session: ClientSession,
+  ): Promise<User> {
+    const existedUser = await this.findByPhoneNumber(createUserDto.phoneNumber);
+    if (existedUser) {
+      throw new ConflictException('Số điện thoại này đã được sử dụng');
+    }
     const createdUser = new this.userModel(createUserDto);
-    return createdUser.save();
+    return createdUser.save({ session });
   }
 
-  async findByPhoneNumber(phoneNumber: string): Promise<User | null> {
-    const user = await this.userModel
-      .findOne({ phoneNumber: phoneNumber })
-      .exec();
-    if (!user) {
-      return null;
-    }
-    return user;
+  async findByPhoneNumber(phoneNumber: string): Promise<User> {
+    return this.userModel.findOne({ phoneNumber: phoneNumber }).exec();
   }
 
   async findAll(): Promise<User[]> {
