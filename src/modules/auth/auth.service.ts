@@ -21,6 +21,7 @@ export class AuthService {
       const user = await this.userService.findByPhoneNumber(phoneNumber);
       const payload = { username: user.email, sub: user.phoneNumber };
       return {
+        user,
         access_token: this.jwtService.sign(payload),
       };
     }
