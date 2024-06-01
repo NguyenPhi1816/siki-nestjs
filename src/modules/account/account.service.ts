@@ -34,19 +34,6 @@ export class AccountService {
     return createdAccount.save({ session });
   }
 
-  async authenticate(phoneNumber: string, password: string): Promise<Account> {
-    const account = await this.findAccountByPhoneNumber(phoneNumber);
-
-    if (
-      !account ||
-      !(await this.passwordService.comparePasswords(password, account.password))
-    ) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
-
-    return account;
-  }
-
   async findAccountByPhoneNumber(phoneNumber: string): Promise<Account> {
     return this.accountModel.findOne({ phoneNumber }).exec();
   }
